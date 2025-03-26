@@ -1,4 +1,4 @@
-package com.company.inventory.response;
+package com.company.inventory.categories.response;
 
 import java.util.ArrayList;
 import java.util.HashMap;

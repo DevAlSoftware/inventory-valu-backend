@@ -1,6 +1,6 @@
-package com.company.inventory.response;
+package com.company.inventory.categories.response;
 
-import com.company.inventory.model.Category;
+import com.company.inventory.categories.model.Category;
 import lombok.Data;
 
 import java.util.List;

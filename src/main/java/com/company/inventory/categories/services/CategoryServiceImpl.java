@@ -1,8 +1,8 @@
-package com.company.inventory.services;
+package com.company.inventory.categories.services;
 
-import com.company.inventory.dao.ICategoryDao;
-import com.company.inventory.model.Category;
-import com.company.inventory.response.CategoryResponseRest;
+import com.company.inventory.categories.dao.ICategoryDao;
+import com.company.inventory.categories.model.Category;
+import com.company.inventory.categories.response.CategoryResponseRest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

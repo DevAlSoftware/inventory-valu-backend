@@ -1,4 +1,4 @@
-package com.company.inventory.model;
+package com.company.inventory.categories.model;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
