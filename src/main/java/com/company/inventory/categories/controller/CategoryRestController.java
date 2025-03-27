@@ -36,7 +36,7 @@ public class CategoryRestController {
 
     /**
      * SAVE categories
-     * @param Category
+     * @param category
      * @return
      */
     @PostMapping("/categories")
@@ -44,4 +44,17 @@ public class CategoryRestController {
 
         return categoryService.save(category);
     }
+
+    /**
+     * update categories
+     * @param category
+     * @param id
+     * @return
+     */
+    @PutMapping("/categories/{id}")
+    public ResponseEntity<CategoryResponseRest> update(@RequestBody Category category, @PathVariable Long id) {
+
+        return categoryService.update(category, id);
+    }
+
 }
