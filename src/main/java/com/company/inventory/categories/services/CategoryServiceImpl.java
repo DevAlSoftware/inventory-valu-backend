@@ -9,13 +9,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.swing.text.html.Option;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 @Service
-public class CategoryServiceImpl implements ICategoryService{
+public class CategoryServiceImpl implements ICategoryService {
 
     @Autowired
     private ICategoryDao categoryDao;
@@ -25,13 +24,13 @@ public class CategoryServiceImpl implements ICategoryService{
     public ResponseEntity<CategoryResponseRest> search() {
 
         CategoryResponseRest response = new CategoryResponseRest();
-        try{
+        try {
             List<Category> category = (List<Category>) categoryDao.findAll();
 
             response.getCategoryResponse().setCategory(category);
             response.setMetadata("Respuesta ok", "00", "Respuesta exitosa");
 
-        }catch (Exception e) {
+        } catch (Exception e) {
 
             response.setMetadata("Respuesta Nok", "-1", "Error al consultar");
             e.getStackTrace();
@@ -43,12 +42,11 @@ public class CategoryServiceImpl implements ICategoryService{
 
     @Override
     @Transactional(readOnly = true)
-    public ResponseEntity<CategoryResponseRest> searchById(Long id)
-    {
+    public ResponseEntity<CategoryResponseRest> searchById(Long id) {
         CategoryResponseRest response = new CategoryResponseRest();
         List<Category> list = new ArrayList<>();
 
-        try{
+        try {
 
             Optional<Category> category = categoryDao.findById(id);
 
@@ -61,7 +59,7 @@ public class CategoryServiceImpl implements ICategoryService{
                 return new ResponseEntity<CategoryResponseRest>(response, HttpStatus.NOT_FOUND);
             }
 
-        }catch (Exception e) {
+        } catch (Exception e) {
 
             response.setMetadata("Respuesta Nok", "-1", "Error al consultar por Id");
             e.getStackTrace();
@@ -69,5 +67,28 @@ public class CategoryServiceImpl implements ICategoryService{
         }
 
         return new ResponseEntity<CategoryResponseRest>(response, HttpStatus.OK);
+    }
+
+    @Override
+    @Transactional
+    public ResponseEntity<CategoryResponseRest> save(Category category) {
+
+        CategoryResponseRest response = new CategoryResponseRest();
+        List<Category> list = new ArrayList<>();
+
+        try {
+
+            Category categorySaved = categoryDao.save(category);
+
+            list.add(categorySaved);
+            response.getCategoryResponse().setCategory(list);
+            response.setMetadata("Respuesta ok", "00", "Categoria guardada");
+            response.getCategoryResponse().setCategory(list);
+        }catch(Exception e) {
+        response.setMetadata("Respuesta Nok", "-1", "Error al grabar la categoria");
+        e.getStackTrace();
+        return new ResponseEntity<CategoryResponseRest>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+        return new ResponseEntity<CategoryResponseRest>(response,HttpStatus.OK);
     }
 }
