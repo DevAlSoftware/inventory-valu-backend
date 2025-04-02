@@ -1,4 +1,4 @@
-package com.company.inventory.products.service;
+package com.company.inventory.products.services;
 
 import com.company.inventory.products.model.Product;
 import com.company.inventory.products.response.ProductResponseRest;

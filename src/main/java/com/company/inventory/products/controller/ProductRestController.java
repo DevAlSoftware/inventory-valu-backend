@@ -4,7 +4,7 @@ import java.io.IOException;
 
 import com.company.inventory.products.model.Product;
 import com.company.inventory.products.response.ProductResponseRest;
-import com.company.inventory.products.service.IProductService;
+import com.company.inventory.products.services.IProductService;
 import com.company.inventory.util.Util;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;

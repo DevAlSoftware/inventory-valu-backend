@@ -59,7 +59,7 @@ public class CategoryRestController {
     }
 
     /**
-     * delete categorie
+     * delete categories
      * @param id
      * @return
      */

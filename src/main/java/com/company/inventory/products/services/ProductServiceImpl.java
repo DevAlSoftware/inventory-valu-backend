@@ -1,4 +1,4 @@
-package com.company.inventory.products.service;
+package com.company.inventory.products.services;
 
 import java.util.ArrayList;
 import java.util.List;
