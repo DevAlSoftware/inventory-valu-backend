@@ -22,7 +22,7 @@ public class Sale implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name = "customer_id", nullable = false)
     private Customer customer;
 
@@ -32,5 +32,4 @@ public class Sale implements Serializable {
     private List<SaleDetail> saleDetails;
 
     private Double total;
-
 }

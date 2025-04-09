@@ -1,8 +1,13 @@
 package com.company.inventory.sale.services;
 
+import com.company.inventory.customers.dao.ICustomerDao;
+import com.company.inventory.customers.model.Customer;
+import com.company.inventory.products.dao.IProductDao;
+import com.company.inventory.products.model.Product;
 import com.company.inventory.sale.dao.ISaleDao;
 import com.company.inventory.sale.model.Sale;
 import com.company.inventory.sale.response.SaleResponseRest;
+import com.company.inventory.saleDetail.model.SaleDetail;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +23,12 @@ public class SaleServiceImpl implements ISaleService {
 
     @Autowired
     private ISaleDao saleDao;
+
+    @Autowired
+    private ICustomerDao customerDao;
+
+    @Autowired
+    private IProductDao productDao;
 
     @Override
     @Transactional(readOnly = true)
@@ -63,17 +74,41 @@ public class SaleServiceImpl implements ISaleService {
     public ResponseEntity<SaleResponseRest> save(Sale sale) {
         SaleResponseRest response = new SaleResponseRest();
         List<Sale> list = new ArrayList<>();
+
         try {
+            // Asociar la venta a cada detalle
+            if (sale.getSaleDetails() != null) {
+                for (SaleDetail detail : sale.getSaleDetails()) {
+                    detail.setSale(sale);
+                }
+            }
+
+            // Guardar la venta (y en cascada los detalles si está bien mapeado)
             Sale saleSaved = saleDao.save(sale);
+
+            // Recargar el customer completo
+            Customer customerFull = customerDao.findById(saleSaved.getCustomer().getId()).orElse(null);
+            saleSaved.setCustomer(customerFull);
+
+            // Recargar cada producto completo en los detalles
+            for (SaleDetail detail : saleSaved.getSaleDetails()) {
+                Product productFull = productDao.findById(detail.getProduct().getId()).orElse(null);
+                detail.setProduct(productFull);
+            }
+
             list.add(saleSaved);
             response.getSaleResponse().setSale(list);
             response.setMetadata("Respuesta ok", "00", "Venta registrada correctamente");
+
         } catch (Exception e) {
+            e.printStackTrace();
             response.setMetadata("Respuesta Nok", "-1", "Error al registrar venta");
             return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
+
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
+
 
     @Override
     @Transactional

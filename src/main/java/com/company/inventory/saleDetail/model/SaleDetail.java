@@ -2,6 +2,7 @@ package com.company.inventory.saleDetail.model;
 
 import com.company.inventory.products.model.Product;
 import com.company.inventory.sale.model.Sale;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -20,6 +21,7 @@ public class SaleDetail implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @JsonBackReference
     @ManyToOne
     @JoinColumn(name = "sale_id", nullable = false)
     private Sale sale;
