@@ -38,8 +38,9 @@ public class CategoryExcelExporter {
         style.setFont(font);
 
         createCell(row, 0, "ID", style);
-        createCell(row, 1, "Nombre", style);
-        createCell(row, 2, "Descripción", style);
+        createCell(row, 1, "Code", style);
+        createCell(row, 2, "Nombre", style);
+        createCell(row, 3, "Descripción", style);
     }
 
     private void createCell(Row row, int columnCount, Object value, CellStyle style) {
@@ -71,6 +72,7 @@ public class CategoryExcelExporter {
             Row row = sheet.createRow(rowCount++);
             int columnCount = 0;
             createCell(row, columnCount++, String.valueOf(result.getId()), style);
+            createCell(row, columnCount++, result.getCode(), style);
             createCell(row, columnCount++, result.getName(), style);
             createCell(row, columnCount++, result.getDescription(), style);
 

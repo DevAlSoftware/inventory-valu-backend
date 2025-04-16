@@ -39,10 +39,12 @@ public class ProductExcelExporter {
         style.setFont(font);
 
         createCell(row, 0, "ID", style);
-        createCell(row, 1, "Nombre", style);
-        createCell(row, 2, "Precio", style);
-        createCell(row, 3, "Cantidad", style);
-        createCell(row, 4, "Categoría", style);
+        createCell(row, 1, "Code", style);
+        createCell(row, 2, "Nombre", style);
+        createCell(row, 3, "Precio", style);
+        createCell(row, 4, "Cantidad", style);
+        createCell(row, 5, "Ubicación", style);
+        createCell(row, 6, "Categoría", style);
 
     }
 
@@ -78,8 +80,10 @@ public class ProductExcelExporter {
             int columnCount = 0;
             createCell(row, columnCount++, String.valueOf(result.getId()), style);
             createCell(row, columnCount++, result.getName(), style);
+            createCell(row, columnCount++, result.getCode(), style);
             createCell(row, columnCount++, result.getPrice(), style);
             createCell(row, columnCount++, result.getAccount(), style);
+            createCell(row, columnCount++, result.getUbication(), style);
             createCell(row, columnCount++, result.getCategory().getName(), style);
 
         }
