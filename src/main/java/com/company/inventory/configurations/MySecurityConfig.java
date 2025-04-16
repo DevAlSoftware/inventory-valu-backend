@@ -61,7 +61,7 @@ public class MySecurityConfig {
                 .exceptionHandling(ex -> ex.authenticationEntryPoint(unauthorizedHandler))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/v1/generate-token" , "/api/v1/login").permitAll()
+                        .requestMatchers("/api/v1/generate-token" , "/api/v1/login", "/api/v1/usuarios").permitAll()
                         .requestMatchers(HttpMethod.OPTIONS).permitAll()
                         .anyRequest().authenticated()
                 );

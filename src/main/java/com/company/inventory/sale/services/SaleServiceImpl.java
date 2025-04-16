@@ -116,6 +116,8 @@ public class SaleServiceImpl implements ISaleService {
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
+
+
     @Override
     @Transactional
     public ResponseEntity<SaleResponseRest> update(Sale sale, Long id) {
