@@ -31,7 +31,7 @@ public class AuthenticationController {
     @Autowired
     private JwtUtils jwtUtils;
 
-    @PostMapping("/usuarios/generate-token")
+    @PostMapping("/generate-token")
     public ResponseEntity<?> generarToken(@RequestBody JwtRequest jwtRequest) throws Exception {
         try {
             autenticar(jwtRequest.getUsername(), jwtRequest.getPassword());
@@ -55,7 +55,7 @@ public class AuthenticationController {
         }
     }
 
-    @GetMapping("/usuarios/actual-usuario")
+    @GetMapping("/login")
     public User obtenerUsuarioActual(Principal principal) {
         return (User) this.userDetailsService.loadUserByUsername(principal.getName());
     }
