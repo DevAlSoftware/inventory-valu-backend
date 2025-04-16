@@ -31,11 +31,12 @@ public class SaleDetail implements Serializable {
     private Product product;
 
     private Integer quantity;
-
     private Double price;
-
     private Double profitPercentage;
-
     private Double total;
+
+    private Double subtotalSinGanancia;
+    private Double ganancia;
 }
+
 

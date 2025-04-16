@@ -75,8 +75,18 @@ public class SaleDetailServiceImpl implements ISaleDetailService {
             if (productOptional.isPresent()) {
                 Product product = productOptional.get();
                 if (product.getAccount() >= saleDetail.getQuantity()) {
+                    // Restar el stock
                     product.setAccount(product.getAccount() - saleDetail.getQuantity());
                     productDao.save(product);
+
+                    // 💡 Cálculos clave
+                    double subtotal = saleDetail.getPrice() * saleDetail.getQuantity();
+                    double totalConGanancia = subtotal + (subtotal * saleDetail.getProfitPercentage());
+
+                    saleDetail.setSubtotalSinGanancia(subtotal);
+                    saleDetail.setGanancia(totalConGanancia - subtotal);
+                    saleDetail.setTotal(totalConGanancia);
+
                     SaleDetail saleDetailSaved = saleDetailDao.save(saleDetail);
                     list.add(saleDetailSaved);
                     response.getSaleDetailResponse().setSaleDetail(list);
@@ -96,6 +106,7 @@ public class SaleDetailServiceImpl implements ISaleDetailService {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
+
     @Override
     @Transactional
     public ResponseEntity<SaleDetailResponseRest> update(SaleDetail saleDetail, Long id) {
@@ -108,31 +119,42 @@ public class SaleDetailServiceImpl implements ISaleDetailService {
             if (saleDetailOptional.isPresent()) {
                 SaleDetail saleDetailToUpdate = saleDetailOptional.get();
 
-                // Restaurar el stock del producto antes de actualizar
+                // Restaurar stock anterior
                 Optional<Product> productOptional = productDao.findById(saleDetailToUpdate.getProduct().getId());
                 if (productOptional.isPresent()) {
                     Product product = productOptional.get();
-                    product.setAccount(product.getAccount() + saleDetailToUpdate.getQuantity()); // Devolver stock antes de actualizar
+                    product.setAccount(product.getAccount() + saleDetailToUpdate.getQuantity());
                     productDao.save(product);
                 }
 
-                // Actualizar datos del detalle de venta
+                // Actualizar datos
                 saleDetailToUpdate.setQuantity(saleDetail.getQuantity());
                 saleDetailToUpdate.setPrice(saleDetail.getPrice());
+                saleDetailToUpdate.setProfitPercentage(saleDetail.getProfitPercentage());
                 saleDetailToUpdate.setProduct(saleDetail.getProduct());
 
-                // Ajustar stock con la nueva cantidad
-                if (productOptional.isPresent()) {
-                    Product product = productOptional.get();
-                    if (product.getAccount() >= saleDetail.getQuantity()) {
-                        product.setAccount(product.getAccount() - saleDetail.getQuantity());
-                        productDao.save(product);
+                // Ajustar stock con nueva cantidad
+                Optional<Product> newProductOptional = productDao.findById(saleDetail.getProduct().getId());
+                if (newProductOptional.isPresent()) {
+                    Product newProduct = newProductOptional.get();
+                    if (newProduct.getAccount() >= saleDetail.getQuantity()) {
+                        newProduct.setAccount(newProduct.getAccount() - saleDetail.getQuantity());
+                        productDao.save(newProduct);
                     } else {
                         response.setMetadata("Respuesta NOK", "-2", "Stock insuficiente para la actualización");
                         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
                     }
                 }
 
+                // 💡 Recalcular campos
+                double subtotal = saleDetail.getPrice() * saleDetail.getQuantity();
+                double totalConGanancia = subtotal + (subtotal * saleDetail.getProfitPercentage());
+
+                saleDetailToUpdate.setSubtotalSinGanancia(subtotal);
+                saleDetailToUpdate.setGanancia(totalConGanancia - subtotal);
+                saleDetailToUpdate.setTotal(totalConGanancia);
+
+                // Guardar
                 SaleDetail updatedSaleDetail = saleDetailDao.save(saleDetailToUpdate);
                 list.add(updatedSaleDetail);
                 response.getSaleDetailResponse().setSaleDetail(list);
