@@ -147,6 +147,7 @@ public class CategoryServiceImpl implements ICategoryService {
                 // se procederá a actualizar el registro
                 categorySearch.get().setName(category.getName());
                 categorySearch.get().setDescription(category.getDescription());
+                categorySearch.get().setCode(category.getCode());
 
                 Category categoryToUpdate = categoryDao.save(categorySearch.get());
 

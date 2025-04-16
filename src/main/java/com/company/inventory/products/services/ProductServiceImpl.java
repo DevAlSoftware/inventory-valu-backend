@@ -245,6 +245,8 @@ public class ProductServiceImpl implements IProductService{
                 productSearch.get().setName(product.getName());
                 productSearch.get().setPicture(product.getPicture());
                 productSearch.get().setPrice(product.getPrice());
+                productSearch.get().setCode(product.getCode());
+                productSearch.get().setUbication(product.getUbication());
 
                 //save the product in DB
                 Product productToUpdate = productDao.save(productSearch.get());

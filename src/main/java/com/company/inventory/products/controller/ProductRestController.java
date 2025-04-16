@@ -39,6 +39,8 @@ public class ProductRestController {
      * @param name
      * @param price
      * @param account
+     * @param code
+     * @param ubication
      * @param categoryID
      * @return
      * @throws IOException
@@ -49,6 +51,8 @@ public class ProductRestController {
             @RequestParam("name") String name,
             @RequestParam("price") int price,
             @RequestParam("account") int account,
+            @RequestParam("code") String code,
+            @RequestParam("ubication") String ubication,
             @RequestParam("categoryId") Long categoryID) throws IOException
     {
 
@@ -56,6 +60,8 @@ public class ProductRestController {
         product.setName(name);
         product.setAccount(account);
         product.setPrice(price);
+        product.setCode(code);
+        product.setUbication(ubication);
         product.setPicture(Util.compressZLib(picture.getBytes()));
 
         ResponseEntity<ProductResponseRest> response = productService.save(product, categoryID);
@@ -118,6 +124,8 @@ public class ProductRestController {
      * @param account
      * @param categoryID
      * @param id
+     * @param code
+     * @param ubication
      * @return
      * @throws IOException
      */
@@ -127,6 +135,8 @@ public class ProductRestController {
             @RequestParam("name") String name,
             @RequestParam("price") int price,
             @RequestParam("account") int account,
+            @RequestParam("code") String code,
+            @RequestParam("ubication") String ubication,
             @RequestParam("categoryId") Long categoryID,
             @PathVariable Long id) throws IOException
     {
@@ -135,6 +145,8 @@ public class ProductRestController {
         product.setName(name);
         product.setAccount(account);
         product.setPrice(price);
+        product.setCode(code);
+        product.setUbication(ubication);
         product.setPicture(Util.compressZLib(picture.getBytes()));
 
         ResponseEntity<ProductResponseRest> response = productService.update(product, categoryID, id);
