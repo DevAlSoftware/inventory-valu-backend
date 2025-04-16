@@ -3,6 +3,9 @@ package com.company.inventory.categories.services;
 import com.company.inventory.categories.dao.ICategoryDao;
 import com.company.inventory.categories.model.Category;
 import com.company.inventory.categories.response.CategoryResponseRest;
+import com.company.inventory.products.model.Product;
+import com.company.inventory.products.response.ProductResponseRest;
+import com.company.inventory.util.Util;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -64,6 +67,44 @@ public class CategoryServiceImpl implements ICategoryService {
             response.setMetadata("Respuesta Nok", "-1", "Error al consultar por Id");
             e.getStackTrace();
             return new ResponseEntity<CategoryResponseRest>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+        return new ResponseEntity<CategoryResponseRest>(response, HttpStatus.OK);
+    }
+
+    @Override
+    @Transactional (readOnly = true)
+    public ResponseEntity<CategoryResponseRest> searchByName(String name) {
+        CategoryResponseRest response = new CategoryResponseRest();
+        List<Category> list = new ArrayList<>();
+        List<Category> listAux = new ArrayList<>();
+
+        try {
+
+            //search categoria by name
+            listAux = categoryDao.findByNameContainingIgnoreCase(name);
+
+
+            if( listAux.size() > 0) {
+
+                listAux.stream().forEach( (c) -> {
+                    list.add(c);
+                });
+
+                response.getCategoryResponse().setCategory(list);
+                response.setMetadata("Respuesta ok", "00", "Categoria encontrada");
+
+            } else {
+                response.setMetadata("respuesta nok", "-1", "Categorias no encontradas ");
+                return new ResponseEntity<CategoryResponseRest>(response, HttpStatus.NOT_FOUND);
+            }
+
+
+        } catch (Exception e) {
+            e.getStackTrace();
+            response.setMetadata("respuesta nok", "-1", "Error al buscar categoria por nombre");
+            return new ResponseEntity<CategoryResponseRest>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+
         }
 
         return new ResponseEntity<CategoryResponseRest>(response, HttpStatus.OK);

@@ -3,6 +3,7 @@ package com.company.inventory.categories.controller;
 import com.company.inventory.categories.model.Category;
 import com.company.inventory.categories.response.CategoryResponseRest;
 import com.company.inventory.categories.services.ICategoryService;
+import com.company.inventory.products.response.ProductResponseRest;
 import com.company.inventory.util.CategoryExcelExporter;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +38,17 @@ public class CategoryRestController {
     public ResponseEntity<CategoryResponseRest> searchCategoriesById (@PathVariable Long id) {
 
         return categoryService.searchById(id);
+    }
+
+    /**
+     * search by name
+     * @param name
+     * @return
+     */
+    @GetMapping("/categories/filter/{name}")
+    public ResponseEntity<CategoryResponseRest> searchByName(@PathVariable String name){
+        ResponseEntity<CategoryResponseRest> response = categoryService.searchByName(name);
+        return response;
     }
 
     /**
