@@ -1,5 +1,6 @@
 package com.company.inventory.customers.controller;
 
+import com.company.inventory.categories.response.CategoryResponseRest;
 import com.company.inventory.customers.model.Customer;
 import com.company.inventory.customers.response.CustomerResponseRest;
 import com.company.inventory.customers.services.ICustomerService;
@@ -29,6 +30,17 @@ public class CustomerController {
      */
     @GetMapping("/customers/{id}")
     public ResponseEntity<CustomerResponseRest> searchCustomersById (@PathVariable Long id) { return customerService.searchById(id); }
+
+    /**
+     * search by name
+     * @param fullName
+     * @return
+     */
+    @GetMapping("/customers/filter/{fullName}")
+    public ResponseEntity<CustomerResponseRest> searchByName(@PathVariable String fullName){
+        ResponseEntity<CustomerResponseRest> response = customerService.searchByFullName(fullName);
+        return response;
+    }
 
     /**
      * SAVE customers

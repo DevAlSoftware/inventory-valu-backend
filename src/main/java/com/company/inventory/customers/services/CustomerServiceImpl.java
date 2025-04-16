@@ -1,5 +1,7 @@
 package com.company.inventory.customers.services;
 
+import com.company.inventory.categories.model.Category;
+import com.company.inventory.categories.response.CategoryResponseRest;
 import com.company.inventory.customers.dao.ICustomerDao;
 import com.company.inventory.customers.model.Customer;
 import com.company.inventory.customers.response.CustomerResponseRest;
@@ -66,6 +68,44 @@ public class CustomerServiceImpl implements ICustomerService {
             response.setMetadata("Respuesta Nok", "-1", "Error al consultar");
             e.getStackTrace();
             return new ResponseEntity<CustomerResponseRest>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+        return new ResponseEntity<CustomerResponseRest>(response, HttpStatus.OK);
+    }
+
+    @Override
+    @Transactional (readOnly = true)
+    public ResponseEntity<CustomerResponseRest> searchByFullName(String fullName) {
+        CustomerResponseRest response = new CustomerResponseRest();
+        List<Customer> list = new ArrayList<>();
+        List<Customer> listAux = new ArrayList<>();
+
+        try {
+
+            //search cliente by name
+            listAux = customerDao.findByFullNameContainingIgnoreCase(fullName);
+
+
+            if( listAux.size() > 0) {
+
+                listAux.stream().forEach( (c) -> {
+                    list.add(c);
+                });
+
+                response.getCustomerResponse().setCustomer(list);
+                response.setMetadata("Respuesta ok", "00", "Cliente encontrado");
+
+            } else {
+                response.setMetadata("respuesta nok", "-1", "Cliente no encontrado ");
+                return new ResponseEntity<CustomerResponseRest>(response, HttpStatus.NOT_FOUND);
+            }
+
+
+        } catch (Exception e) {
+            e.getStackTrace();
+            response.setMetadata("respuesta nok", "-1", "Error al buscar Cliente por nombre");
+            return new ResponseEntity<CustomerResponseRest>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+
         }
 
         return new ResponseEntity<CustomerResponseRest>(response, HttpStatus.OK);
