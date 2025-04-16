@@ -8,34 +8,34 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/sales")
+@RequestMapping("/api/v1")
 @CrossOrigin(origins = "*")
 public class SaleRestController {
 
     @Autowired
     private ISaleService saleService;
 
-    @GetMapping
+    @GetMapping("/sales")
     public ResponseEntity<SaleResponseRest> getSales() {
         return saleService.search();
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/sales/{id}")
     public ResponseEntity<SaleResponseRest> getSaleById(@PathVariable Long id) {
         return saleService.searchById(id);
     }
 
-    @PostMapping
+    @PostMapping("/sales")
     public ResponseEntity<SaleResponseRest> createSale(@RequestBody Sale sale) {
         return saleService.save(sale);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/sales/{id}")
     public ResponseEntity<SaleResponseRest> updateSale(@RequestBody Sale sale, @PathVariable Long id) {
         return saleService.update(sale, id);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/sales/{id}")
     public ResponseEntity<SaleResponseRest> deleteSale(@PathVariable Long id) {
         return saleService.deleteById(id);
     }

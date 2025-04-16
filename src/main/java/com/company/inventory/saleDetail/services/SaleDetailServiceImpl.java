@@ -182,4 +182,21 @@ public class SaleDetailServiceImpl implements ISaleDetailService {
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
+
+    @Override
+    public ResponseEntity<SaleDetailResponseRest> findBySaleId(Long saleId) {
+        SaleDetailResponseRest response = new SaleDetailResponseRest();
+
+        try {
+            List<SaleDetail> saleDetails = saleDetailDao.findBySaleId(saleId);
+            response.getSaleDetailResponse().setSaleDetail(saleDetails);
+            response.setMetadata("00", "Success", "Detalles encontrados");
+        } catch (Exception e) {
+            response.setMetadata("01", "Error", "Error al obtener detalles por venta");
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
 }

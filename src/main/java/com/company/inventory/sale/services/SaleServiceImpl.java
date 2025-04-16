@@ -90,9 +90,17 @@ public class SaleServiceImpl implements ISaleService {
             Customer customerFull = customerDao.findById(saleSaved.getCustomer().getId()).orElse(null);
             saleSaved.setCustomer(customerFull);
 
-            // Recargar cada producto completo en los detalles
+            // Recargar cada producto completo en los detalles y actualizar stock
             for (SaleDetail detail : saleSaved.getSaleDetails()) {
                 Product productFull = productDao.findById(detail.getProduct().getId()).orElse(null);
+                if (productFull != null) {
+                    // Restar la cantidad vendida del stock
+                    int updatedStock = productFull.getAccount() - detail.getQuantity();
+                    productFull.setAccount(updatedStock);
+
+                    // Guardar el producto con el stock actualizado
+                    productDao.save(productFull);
+                }
                 detail.setProduct(productFull);
             }
 
@@ -108,8 +116,6 @@ public class SaleServiceImpl implements ISaleService {
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
-
-
     @Override
     @Transactional
     public ResponseEntity<SaleResponseRest> update(Sale sale, Long id) {

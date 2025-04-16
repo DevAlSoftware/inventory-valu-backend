@@ -11,4 +11,5 @@ public interface ISaleDetailService {
     ResponseEntity<SaleDetailResponseRest> save(SaleDetail saleDetail);
     ResponseEntity<SaleDetailResponseRest> update(SaleDetail saleDetail, Long id);
     ResponseEntity<SaleDetailResponseRest> deleteById(Long id);
+    ResponseEntity<SaleDetailResponseRest> findBySaleId(Long saleId);
 }

@@ -8,34 +8,39 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/sale-details")
+@RequestMapping("/api/v1")
 @CrossOrigin(origins = "*")
 public class SaleDetailRestController {
 
     @Autowired
     private ISaleDetailService saleDetailService;
 
-    @GetMapping
+    @GetMapping("/sales-detail")
     public ResponseEntity<SaleDetailResponseRest> getAllSaleDetails() {
         return saleDetailService.search();
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/sales-detail/{id}")
     public ResponseEntity<SaleDetailResponseRest> getSaleDetailById(@PathVariable Long id) {
         return saleDetailService.searchById(id);
     }
 
-    @PostMapping
+    @GetMapping("/sales-detail/sale/{saleId}")
+    public ResponseEntity<SaleDetailResponseRest> getSaleDetailsBySaleId(@PathVariable Long saleId) {
+        return saleDetailService.findBySaleId(saleId);
+    }
+
+    @PostMapping("/sales-detail")
     public ResponseEntity<SaleDetailResponseRest> createSaleDetail(@RequestBody SaleDetail saleDetail) {
         return saleDetailService.save(saleDetail);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/sales-detail/{id}")
     public ResponseEntity<SaleDetailResponseRest> updateSaleDetail(@RequestBody SaleDetail saleDetail, @PathVariable Long id) {
         return saleDetailService.update(saleDetail, id);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/sales-detail/{id}")
     public ResponseEntity<SaleDetailResponseRest> deleteSaleDetail(@PathVariable Long id) {
         return saleDetailService.deleteById(id);
     }

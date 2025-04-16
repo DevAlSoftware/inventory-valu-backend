@@ -5,7 +5,9 @@ import java.io.IOException;
 import com.company.inventory.products.model.Product;
 import com.company.inventory.products.response.ProductResponseRest;
 import com.company.inventory.products.services.IProductService;
+import com.company.inventory.util.ProductExcelExporter;
 import com.company.inventory.util.Util;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -139,8 +141,31 @@ public class ProductRestController {
 
         return response;
 
+    }
+    /**
+     * export product in excel file
+     * @param response
+     * @throws IOException
+     */
+    @GetMapping("/products/export/excel")
+    public void exportToExcel(HttpServletResponse response) throws IOException {
+
+        response.setContentType("application/octet-stream");
+
+        String headerKey = "Content-Disposition";
+        String headerValue = "attachment; filename=result_product.xlsx";
+        response.setHeader(headerKey, headerValue);
+
+        ResponseEntity<ProductResponseRest> products = productService.search();
+
+        ProductExcelExporter excelExporter = new ProductExcelExporter(
+                products.getBody().getProduct().getProducts());
+
+        excelExporter.export(response);
+
 
     }
 
 }
+
 
