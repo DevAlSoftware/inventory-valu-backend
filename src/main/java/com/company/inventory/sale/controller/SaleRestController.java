@@ -47,7 +47,7 @@ public class SaleRestController {
         return saleService.deleteById(id);
     }
 
-    @GetMapping("/categories/export/excel")
+    @GetMapping("/sales/export/excel")
     public void exportToExcel(HttpServletResponse response) throws IOException {
 
         response.setContentType("application/octet-stream");
