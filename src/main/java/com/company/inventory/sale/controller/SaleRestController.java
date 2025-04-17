@@ -1,11 +1,18 @@
 package com.company.inventory.sale.controller;
 
+import com.company.inventory.categories.response.CategoryResponseRest;
 import com.company.inventory.sale.model.Sale;
 import com.company.inventory.sale.response.SaleResponseRest;
 import com.company.inventory.sale.services.ISaleService;
+import com.company.inventory.util.CategoryExcelExporter;
+import com.company.inventory.util.SaleExcelExporter;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.io.IOException;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1")
@@ -38,5 +45,24 @@ public class SaleRestController {
     @DeleteMapping("/sales/{id}")
     public ResponseEntity<SaleResponseRest> deleteSale(@PathVariable Long id) {
         return saleService.deleteById(id);
+    }
+
+    @GetMapping("/categories/export/excel")
+    public void exportToExcel(HttpServletResponse response) throws IOException {
+
+        response.setContentType("application/octet-stream");
+
+        String headerKey = "Content-Disposition";
+        String headerValue = "attachment; filename=result_category.xlsx";
+        response.setHeader(headerKey, headerValue);
+
+        ResponseEntity<SaleResponseRest> saleResponse = saleService.search();
+
+        SaleExcelExporter excelExporter = new SaleExcelExporter(
+                saleResponse.getBody().getSaleResponse().getSale());
+
+        excelExporter.export(response);
+
+
     }
 }
