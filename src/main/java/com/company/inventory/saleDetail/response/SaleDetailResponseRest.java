@@ -1,7 +1,6 @@
 package com.company.inventory.saleDetail.response;
 
-import com.company.inventory.categories.response.ResponseRest;
-
+import com.company.inventory.ResponseRest;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -10,4 +9,12 @@ import lombok.Setter;
 public class SaleDetailResponseRest extends ResponseRest {
 
     private SaleDetailResponse saleDetailResponse = new SaleDetailResponse();
+
+    public SaleDetailResponse getSaleDetailResponse() {
+        return saleDetailResponse;
+    }
+
+    public void setSaleDetailResponse(SaleDetailResponse saleDetailResponse) {
+        this.saleDetailResponse = saleDetailResponse;
+    }
 }

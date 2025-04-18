@@ -9,4 +9,12 @@ import java.util.List;
 public class SaleResponse {
 
     private List<Sale> sale;
+
+    public List<Sale> getSale() {
+        return sale;
+    }
+
+    public void setSale(List<Sale> sale) {
+        this.sale = sale;
+    }
 }

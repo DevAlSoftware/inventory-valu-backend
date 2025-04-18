@@ -1,11 +1,18 @@
 package com.company.inventory.categories.response;
 
-import lombok.Getter;
-import lombok.Setter;
+import com.company.inventory.ResponseRest;
 
-@Getter
-@Setter
-public class CategoryResponseRest extends ResponseRest{
-
+public class CategoryResponseRest extends ResponseRest {
     private CategoryResponse categoryResponse = new CategoryResponse();
+
+    public CategoryResponse getCategoryResponse() {
+        return categoryResponse;
+    }
+
+    public void setCategoryResponse(CategoryResponse categoryResponse) {
+        this.categoryResponse = categoryResponse;
+    }
+
+
 }
+

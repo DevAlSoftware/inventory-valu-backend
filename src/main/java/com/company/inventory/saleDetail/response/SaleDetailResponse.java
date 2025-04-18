@@ -9,4 +9,12 @@ import java.util.List;
 public class SaleDetailResponse {
 
     private List<SaleDetail> saleDetail;
+
+    public List<SaleDetail> getSaleDetail() {
+        return saleDetail;
+    }
+
+    public void setSaleDetail(List<SaleDetail> saleDetail) {
+        this.saleDetail = saleDetail;
+    }
 }

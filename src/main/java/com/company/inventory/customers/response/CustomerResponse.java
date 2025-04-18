@@ -10,4 +10,12 @@ import java.util.List;
 public class CustomerResponse {
 
     private List<Customer> customer;
+
+    public List<Customer> getCustomer() {
+        return customer;
+    }
+
+    public void setCustomer(List<Customer> customer) {
+        this.customer = customer;
+    }
 }
