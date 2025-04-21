@@ -42,6 +42,11 @@ public class SaleRestController {
         return saleService.update(sale, id);
     }
 
+    @GetMapping("/sales/by-product-id")
+    public ResponseEntity<SaleResponseRest> searchSalesByProductId(@RequestParam Long id) {
+        return saleService.searchSalesByProductId(id);
+    }
+
     @DeleteMapping("/sales/{id}")
     public ResponseEntity<SaleResponseRest> deleteSale(@PathVariable Long id) {
         return saleService.deleteById(id);

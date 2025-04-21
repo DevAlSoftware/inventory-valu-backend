@@ -70,6 +70,33 @@ public class SaleServiceImpl implements ISaleService {
     }
 
     @Override
+    @Transactional(readOnly = true)
+    public ResponseEntity<SaleResponseRest> searchSalesByProductId(Long productId) {
+
+        SaleResponseRest response = new SaleResponseRest();
+        List<Sale> salesList = new ArrayList<>();
+
+        try {
+            salesList = saleDao.findSalesByProductId(productId);
+
+            if (!salesList.isEmpty()) {
+                response.getSaleResponse().setSale(salesList);
+                response.setMetadata("Respuesta OK", "00", "Ventas encontradas con el producto");
+            } else {
+                response.setMetadata("Respuesta Nok", "-1", "No se encontraron ventas con ese producto");
+                return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            response.setMetadata("Respuesta Nok", "-1", "Error al buscar ventas por producto");
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @Override
     @Transactional
     public ResponseEntity<SaleResponseRest> save(Sale sale) {
         SaleResponseRest response = new SaleResponseRest();
