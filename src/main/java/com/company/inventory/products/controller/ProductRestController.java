@@ -40,6 +40,9 @@ public class ProductRestController {
      * @param price
      * @param account
      * @param code
+     * @param size
+     * @param retail
+     * @param wholesaler
      * @param ubication
      * @param categoryID
      * @return
@@ -52,6 +55,9 @@ public class ProductRestController {
             @RequestParam("price") int price,
             @RequestParam("account") int account,
             @RequestParam("code") String code,
+            @RequestParam("size") String size,
+            @RequestParam("retail") String retail,
+            @RequestParam("wholesaler") String wholesaler,
             @RequestParam("ubication") String ubication,
             @RequestParam("categoryId") Long categoryID) throws IOException
     {
@@ -61,6 +67,9 @@ public class ProductRestController {
         product.setAccount(account);
         product.setPrice(price);
         product.setCode(code);
+        product.setSize(size);
+        product.setRetail(retail);
+        product.setWholesaler(wholesaler);
         product.setUbication(ubication);
         product.setPicture(Util.compressZLib(picture.getBytes()));
 
@@ -125,6 +134,9 @@ public class ProductRestController {
      * @param categoryID
      * @param id
      * @param code
+     * @param size
+     * @param retail
+     * @param wholesaler
      * @param ubication
      * @return
      * @throws IOException
@@ -136,6 +148,9 @@ public class ProductRestController {
             @RequestParam("price") int price,
             @RequestParam("account") int account,
             @RequestParam("code") String code,
+            @RequestParam("size") String size,
+            @RequestParam("retail") String retail,
+            @RequestParam("wholesaler") String wholesaler,
             @RequestParam("ubication") String ubication,
             @RequestParam("categoryId") Long categoryID,
             @PathVariable Long id) throws IOException
@@ -146,6 +161,9 @@ public class ProductRestController {
         product.setAccount(account);
         product.setPrice(price);
         product.setCode(code);
+        product.setSize(size);
+        product.setRetail(retail);
+        product.setWholesaler(wholesaler);
         product.setUbication(ubication);
         product.setPicture(Util.compressZLib(picture.getBytes()));
 

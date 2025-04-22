@@ -39,6 +39,12 @@ public class Product implements Serializable {
 
     private String ubication;
 
+    private String size;
+
+    private String retail;
+
+    private String wholesaler;
+
     private int price;
 
     private int account;
