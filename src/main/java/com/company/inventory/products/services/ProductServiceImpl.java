@@ -34,6 +34,13 @@ public class ProductServiceImpl implements IProductService{
         this.productDao = productDao;
     }
 
+    public int getTotalStockForProduct(Long productId) {
+        List<ProductSize> sizes = productSizeDao.findByProductId(productId);
+        return sizes.stream()
+                .mapToInt(ProductSize::getAccount)
+                .sum();
+    }
+
     private void actualizarAccountDelProducto(Product producto) {
         List<ProductSize> tallas = productSizeDao.findByProductId(producto.getId());
 
@@ -203,19 +210,18 @@ public class ProductServiceImpl implements IProductService{
         List<Product> listAux = new ArrayList<>();
 
         try {
-
-            //search producto
             listAux = (List<Product>) productDao.findAll();
 
+            if (listAux.size() > 0) {
 
-            if( listAux.size() > 0) {
-
-                listAux.stream().forEach( (p) -> {
+                // ACTUALIZAR account para cada producto
+                listAux.forEach(p -> {
+                    int total = getTotalStockForProduct(p.getId());
+                    p.setAccount(total);
                     byte[] imageDescompressed = Util.decompressZLib(p.getPicture());
                     p.setPicture(imageDescompressed);
                     list.add(p);
                 });
-
 
                 response.getProduct().setProducts(list);
                 response.setMetadata("Respuesta ok", "00", "Productos encontrados");
@@ -225,12 +231,10 @@ public class ProductServiceImpl implements IProductService{
                 return new ResponseEntity<ProductResponseRest>(response, HttpStatus.NOT_FOUND);
             }
 
-
         } catch (Exception e) {
-            e.getStackTrace();
+            e.printStackTrace();
             response.setMetadata("respuesta nok", "-1", "Error al buscar productos");
             return new ResponseEntity<ProductResponseRest>(response, HttpStatus.INTERNAL_SERVER_ERROR);
-
         }
 
         return new ResponseEntity<ProductResponseRest>(response, HttpStatus.OK);
