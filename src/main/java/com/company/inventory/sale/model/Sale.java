@@ -2,6 +2,7 @@ package com.company.inventory.sale.model;
 
 import com.company.inventory.customers.model.Customer;
 import com.company.inventory.saleDetail.model.SaleDetail;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -29,6 +30,7 @@ public class Sale implements Serializable {
     private LocalDateTime saleDate;
 
     @OneToMany(mappedBy = "sale", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
     private List<SaleDetail> saleDetails;
 
     private Double total;

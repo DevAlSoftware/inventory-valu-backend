@@ -14,6 +14,7 @@ import java.util.List;
 
 @Data
 @Entity
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @Table(name="product")
 public class Product implements Serializable {
 
@@ -33,9 +34,9 @@ public class Product implements Serializable {
 
     private String ubication;
 
-    private double retail;
+    private Double retail;
 
-    private double wholesaler;
+    private Double wholesaler;
 
     private int price;
 
@@ -53,6 +54,23 @@ public class Product implements Serializable {
     @Basic(fetch = FetchType.EAGER)
     @Column( name ="picture", columnDefinition = "longblob")
     private byte[] picture;
+
+    public Product() {
+    }
+
+    public Product(Long id, String name, String code, String ubication, Double retail, Double wholesaler, int price, int account, Category category, List<ProductSize> sizes, byte[] picture) {
+        this.id = id;
+        this.name = name;
+        this.code = code;
+        this.ubication = ubication;
+        this.retail = retail;
+        this.wholesaler = wholesaler;
+        this.price = price;
+        this.account = account;
+        this.category = category;
+        this.sizes = sizes;
+        this.picture = picture;
+    }
 
     public Long getId() {
         return id;

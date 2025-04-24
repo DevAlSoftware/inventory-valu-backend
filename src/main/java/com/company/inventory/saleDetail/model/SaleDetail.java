@@ -5,6 +5,8 @@ import com.company.inventory.products.model.Product;
 import com.company.inventory.productsSize.model.ProductSize;
 import com.company.inventory.sale.model.Sale;
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -23,9 +25,9 @@ public class SaleDetail implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @JsonBackReference
     @ManyToOne
     @JoinColumn(name = "sale_id", nullable = false)
+    @JsonBackReference
     private Sale sale;
 
     @ManyToOne

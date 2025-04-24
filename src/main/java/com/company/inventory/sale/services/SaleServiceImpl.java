@@ -4,6 +4,8 @@ import com.company.inventory.customers.dao.ICustomerDao;
 import com.company.inventory.customers.model.Customer;
 import com.company.inventory.products.dao.IProductDao;
 import com.company.inventory.products.model.Product;
+import com.company.inventory.productsSize.dao.IProductSizeDao;
+import com.company.inventory.productsSize.model.ProductSize;
 import com.company.inventory.sale.dao.ISaleDao;
 import com.company.inventory.sale.model.Sale;
 import com.company.inventory.sale.response.SaleResponseRest;
@@ -29,6 +31,9 @@ public class SaleServiceImpl implements ISaleService {
 
     @Autowired
     private IProductDao productDao;
+
+    @Autowired
+    private IProductSizeDao productSizeDao;
 
     @Override
     @Transactional(readOnly = true)
@@ -103,33 +108,54 @@ public class SaleServiceImpl implements ISaleService {
         List<Sale> list = new ArrayList<>();
 
         try {
-            // Asociar la venta a cada detalle
+            double totalVenta = 0;
+
             if (sale.getSaleDetails() != null) {
                 for (SaleDetail detail : sale.getSaleDetails()) {
                     detail.setSale(sale);
+
+                    // Cargar talla y producto
+                    ProductSize productSize = productSizeDao.findById(detail.getProductSize().getId()).orElse(null);
+                    if (productSize == null) throw new RuntimeException("Talla no encontrada");
+
+                    Product product = productSize.getProduct();
+                    if (product == null) throw new RuntimeException("Producto no encontrado");
+
+                    // Establecer el producto
+                    detail.setProduct(product);
+
+                    // Setear el precio si viene null (por si el front lo olvidó)
+                    if (detail.getPrice() == null) {
+                        detail.setPrice(product.getRetail()); // o wholesalePrice según el tipo
+                    }
+
+                    // Calcular subtotal, ganancia y total
+                    double subtotal = detail.getPrice() * detail.getQuantity();
+                    double ganancia = subtotal * (detail.getProfitPercentage() / 100);
+                    double total = subtotal + ganancia;
+
+                    detail.setSubtotalSinGanancia(subtotal);
+                    detail.setGanancia(ganancia);
+                    detail.setTotal(total);
+
+                    totalVenta += total;
+
+                    // Descontar del stock de esa talla
+                    int stockActual = productSize.getAccount();
+                    int nuevoStock = stockActual - detail.getQuantity();
+                    if (nuevoStock < 0) throw new RuntimeException("Stock insuficiente");
+
+                    productSize.setAccount(nuevoStock);
+                    productSizeDao.save(productSize);
+                    detail.setProductSize(productSize);
                 }
             }
 
-            // Guardar la venta (y en cascada los detalles si está bien mapeado)
-            Sale saleSaved = saleDao.save(sale);
+            sale.setTotal(totalVenta);
 
-            // Recargar el customer completo
+            Sale saleSaved = saleDao.save(sale);
             Customer customerFull = customerDao.findById(saleSaved.getCustomer().getId()).orElse(null);
             saleSaved.setCustomer(customerFull);
-
-            // Recargar cada producto completo en los detalles y actualizar stock
-            for (SaleDetail detail : saleSaved.getSaleDetails()) {
-                Product productFull = productDao.findById(detail.getProduct().getId()).orElse(null);
-                if (productFull != null) {
-                    // Restar la cantidad vendida del stock
-                    int updatedStock = productFull.getAccount() - detail.getQuantity();
-                    productFull.setAccount(updatedStock);
-
-                    // Guardar el producto con el stock actualizado
-                    productDao.save(productFull);
-                }
-                detail.setProduct(productFull);
-            }
 
             list.add(saleSaved);
             response.getSaleResponse().setSale(list);
@@ -137,12 +163,13 @@ public class SaleServiceImpl implements ISaleService {
 
         } catch (Exception e) {
             e.printStackTrace();
-            response.setMetadata("Respuesta Nok", "-1", "Error al registrar venta");
+            response.setMetadata("Respuesta Nok", "-1", "Error al registrar venta: " + e.getMessage());
             return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
+
 
 
     @Override
