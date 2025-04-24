@@ -70,7 +70,6 @@ public class SaleDetailServiceImpl implements ISaleDetailService {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-
     @Override
     @Transactional
     public ResponseEntity<SaleDetailResponseRest> save(SaleDetail saleDetail) {
@@ -103,6 +102,10 @@ public class SaleDetailServiceImpl implements ISaleDetailService {
                 saleDetail.setSubtotalSinGanancia(subtotal);
                 saleDetail.setGanancia(ganancia);
                 saleDetail.setTotal(total);
+
+                // 🔥 Esta línea es la que FALTABA: usa el price (precio de costo sin ganancia)
+                double subtotalSinGanancia = product.getPrice() * saleDetail.getQuantity();
+                saleDetail.setSubtotalSinGanancia(subtotalSinGanancia);
 
                 SaleDetail saved = saleDetailDao.save(saleDetail);
                 list.add(saved);

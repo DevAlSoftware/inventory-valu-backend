@@ -43,6 +43,7 @@ public class SaleDetail implements Serializable {
     private Double profitPercentage;
     private Double total;
 
+    @Column(name = "subtotal_sin_ganancia")
     private Double subtotalSinGanancia;
     private Double ganancia;
 
