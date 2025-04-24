@@ -1,22 +1,16 @@
 package com.company.inventory.products.model;
 
 import com.company.inventory.categories.model.Category;
+import com.company.inventory.productsSize.model.ProductSize;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import jakarta.persistence.*;
 import lombok.Data;
-import jakarta.persistence.Basic;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Lob;
-import jakarta.persistence.Table;
-import jakarta.persistence.ManyToOne;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 @Entity
@@ -39,11 +33,9 @@ public class Product implements Serializable {
 
     private String ubication;
 
-    private String size;
+    private double retail;
 
-    private String retail;
-
-    private String wholesaler;
+    private double wholesaler;
 
     private int price;
 
@@ -53,8 +45,12 @@ public class Product implements Serializable {
     @JsonIgnoreProperties ( {"hibernateLazyInitializer", "handler"})
     private Category category;
 
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    @JsonIgnoreProperties("product")
+    private List<ProductSize> sizes = new ArrayList<>();
+
     @Lob
-    @Basic(fetch = FetchType.LAZY)
+    @Basic(fetch = FetchType.EAGER)
     @Column( name ="picture", columnDefinition = "longblob")
     private byte[] picture;
 
@@ -120,5 +116,29 @@ public class Product implements Serializable {
 
     public void setPicture(byte[] picture) {
         this.picture = picture;
+    }
+
+    public double getRetail() {
+        return retail;
+    }
+
+    public void setRetail(double retail) {
+        this.retail = retail;
+    }
+
+    public double getWholesaler() {
+        return wholesaler;
+    }
+
+    public void setWholesaler(double wholesaler) {
+        this.wholesaler = wholesaler;
+    }
+
+    public List<ProductSize> getSizes() {
+        return sizes;
+    }
+
+    public void setSizes(List<ProductSize> sizes) {
+        this.sizes = sizes;
     }
 }

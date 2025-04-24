@@ -97,19 +97,38 @@ public class ProductSizeServiceImpl implements IProductSizeService {
     }
 
     @Override
-    @Transactional
     public ResponseEntity<ProductSizeResponseRest> deleteById(Long id) {
-        ProductSizeResponseRest response = new ProductSizeResponseRest();
+        ResponseEntity<ProductSizeResponseRest> response = new ResponseEntity<ProductSizeResponseRest>(HttpStatus.INTERNAL_SERVER_ERROR);
+
         try {
-            productSizeDao.deleteById(id);
-            response.setMetadata("respuesta ok", "00", "Talla eliminada");
+            Optional<ProductSize> tallaOpt = productSizeDao.findById(id);
+            if (tallaOpt.isPresent()) {
+                ProductSize talla = tallaOpt.get();
+                Product producto = talla.getProduct();
+
+                // Elimina la talla
+                productSizeDao.deleteById(id);
+
+                // Actualiza el account del producto
+                List<ProductSize> tallasRestantes = productSizeDao.findByProductId(producto.getId());
+                int total = tallasRestantes.stream()
+                        .mapToInt(ProductSize::getAccount)
+                        .sum();
+
+                producto.setAccount(total);
+                productDao.save(producto);
+
+                response = new ResponseEntity<ProductSizeResponseRest>(HttpStatus.OK);
+            } else {
+                response = new ResponseEntity<ProductSizeResponseRest>(HttpStatus.NOT_FOUND);
+            }
         } catch (Exception e) {
             e.printStackTrace();
-            response.setMetadata("respuesta nok", "-1", "Error al eliminar talla");
-            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return new ResponseEntity<>(response, HttpStatus.OK);
+
+        return response;
     }
+
 
     @Override
     @Transactional(readOnly = true)

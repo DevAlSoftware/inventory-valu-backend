@@ -1,7 +1,10 @@
 package com.company.inventory.saleDetail.services;
 
 import com.company.inventory.products.dao.IProductDao;
+import com.company.inventory.products.enums.PriceType;
 import com.company.inventory.products.model.Product;
+import com.company.inventory.productsSize.dao.IProductSizeDao;
+import com.company.inventory.productsSize.model.ProductSize;
 import com.company.inventory.saleDetail.dao.ISaleDetailDao;
 import com.company.inventory.saleDetail.model.SaleDetail;
 import com.company.inventory.saleDetail.response.SaleDetailResponseRest;
@@ -23,6 +26,9 @@ public class SaleDetailServiceImpl implements ISaleDetailService {
 
     @Autowired
     private IProductDao productDao;
+
+    @Autowired
+    private IProductSizeDao productSizeDao;
 
     @Override
     @Transactional(readOnly = true)
@@ -70,42 +76,50 @@ public class SaleDetailServiceImpl implements ISaleDetailService {
     public ResponseEntity<SaleDetailResponseRest> save(SaleDetail saleDetail) {
         SaleDetailResponseRest response = new SaleDetailResponseRest();
         List<SaleDetail> list = new ArrayList<>();
+
         try {
-            Optional<Product> productOptional = productDao.findById(saleDetail.getProduct().getId());
-            if (productOptional.isPresent()) {
-                Product product = productOptional.get();
-                if (product.getAccount() >= saleDetail.getQuantity()) {
-                    // Restar el stock
-                    product.setAccount(product.getAccount() - saleDetail.getQuantity());
-                    productDao.save(product);
+            ProductSize productSize = saleDetail.getProductSize();
 
-                    // 💡 Cálculos clave
-                    double subtotal = saleDetail.getPrice() * saleDetail.getQuantity();
-                    double totalConGanancia = subtotal + (subtotal * saleDetail.getProfitPercentage());
+            if (productSize.getAccount() >= saleDetail.getQuantity()) {
+                // Descontar stock
+                productSize.setAccount(productSize.getAccount() - saleDetail.getQuantity());
+                productSizeDao.save(productSize);
 
-                    saleDetail.setSubtotalSinGanancia(subtotal);
-                    saleDetail.setGanancia(totalConGanancia - subtotal);
-                    saleDetail.setTotal(totalConGanancia);
-
-                    SaleDetail saleDetailSaved = saleDetailDao.save(saleDetail);
-                    list.add(saleDetailSaved);
-                    response.getSaleDetailResponse().setSaleDetail(list);
-                    response.setMetadata("Respuesta ok", "00", "Detalle de venta registrado correctamente");
-                } else {
-                    response.setMetadata("Respuesta Nok", "-1", "Stock insuficiente para la venta");
-                    return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+                // Obtener el precio según el tipo
+                Product product = productSize.getProduct();
+                double unitPrice = 0.0;
+                if (saleDetail.getPriceType() == PriceType.RETAIL) {
+                    unitPrice = product.getRetail();
+                } else if (saleDetail.getPriceType() == PriceType.WHOLESALER) {
+                    unitPrice = product.getWholesaler();
                 }
+
+                // Calcular montos
+                double subtotal = unitPrice * saleDetail.getQuantity();
+                double ganancia = subtotal * saleDetail.getProfitPercentage();
+                double total = subtotal + ganancia;
+
+                saleDetail.setPrice(unitPrice);
+                saleDetail.setSubtotalSinGanancia(subtotal);
+                saleDetail.setGanancia(ganancia);
+                saleDetail.setTotal(total);
+
+                SaleDetail saved = saleDetailDao.save(saleDetail);
+                list.add(saved);
+                response.getSaleDetailResponse().setSaleDetail(list);
+                response.setMetadata("OK", "00", "Detalle guardado correctamente");
             } else {
-                response.setMetadata("Respuesta Nok", "-1", "Producto no encontrado");
-                return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+                response.setMetadata("Error", "-1", "Stock insuficiente para la talla seleccionada");
+                return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
             }
+
         } catch (Exception e) {
-            response.setMetadata("Respuesta Nok", "-1", "Error al registrar detalle de venta");
+            response.setMetadata("Error", "-1", "Error al guardar: " + e.getMessage());
             return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
+
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
-
 
     @Override
     @Transactional
@@ -114,58 +128,54 @@ public class SaleDetailServiceImpl implements ISaleDetailService {
         List<SaleDetail> list = new ArrayList<>();
 
         try {
-            Optional<SaleDetail> saleDetailOptional = saleDetailDao.findById(id);
+            Optional<SaleDetail> existingOpt = saleDetailDao.findById(id);
 
-            if (saleDetailOptional.isPresent()) {
-                SaleDetail saleDetailToUpdate = saleDetailOptional.get();
+            if (existingOpt.isPresent()) {
+                SaleDetail existing = existingOpt.get();
 
-                // Restaurar stock anterior
-                Optional<Product> productOptional = productDao.findById(saleDetailToUpdate.getProduct().getId());
-                if (productOptional.isPresent()) {
-                    Product product = productOptional.get();
-                    product.setAccount(product.getAccount() + saleDetailToUpdate.getQuantity());
-                    productDao.save(product);
+                // 1. Devolver stock anterior
+                ProductSize oldSize = existing.getProductSize();
+                oldSize.setAccount(oldSize.getAccount() + existing.getQuantity());
+                productSizeDao.save(oldSize);
+
+                // 2. Verificar nueva talla y descontar
+                ProductSize newSize = saleDetail.getProductSize();
+
+                if (newSize.getAccount() >= saleDetail.getQuantity()) {
+                    newSize.setAccount(newSize.getAccount() - saleDetail.getQuantity());
+                    productSizeDao.save(newSize);
+
+                    // Actualizar campos
+                    double subtotal = saleDetail.getPrice() * saleDetail.getQuantity();
+                    double ganancia = subtotal * saleDetail.getProfitPercentage();
+                    double total = subtotal + ganancia;
+
+                    existing.setSale(saleDetail.getSale());
+                    existing.setProductSize(saleDetail.getProductSize());
+                    existing.setQuantity(saleDetail.getQuantity());
+                    existing.setPrice(saleDetail.getPrice());
+                    existing.setProfitPercentage(saleDetail.getProfitPercentage());
+                    existing.setSubtotalSinGanancia(subtotal);
+                    existing.setGanancia(ganancia);
+                    existing.setTotal(total);
+
+                    SaleDetail updated = saleDetailDao.save(existing);
+                    list.add(updated);
+                    response.getSaleDetailResponse().setSaleDetail(list);
+                    response.setMetadata("OK", "00", "Detalle actualizado correctamente");
+
+                } else {
+                    response.setMetadata("Error", "-1", "Stock insuficiente en la talla nueva");
+                    return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
                 }
-
-                // Actualizar datos
-                saleDetailToUpdate.setQuantity(saleDetail.getQuantity());
-                saleDetailToUpdate.setPrice(saleDetail.getPrice());
-                saleDetailToUpdate.setProfitPercentage(saleDetail.getProfitPercentage());
-                saleDetailToUpdate.setProduct(saleDetail.getProduct());
-
-                // Ajustar stock con nueva cantidad
-                Optional<Product> newProductOptional = productDao.findById(saleDetail.getProduct().getId());
-                if (newProductOptional.isPresent()) {
-                    Product newProduct = newProductOptional.get();
-                    if (newProduct.getAccount() >= saleDetail.getQuantity()) {
-                        newProduct.setAccount(newProduct.getAccount() - saleDetail.getQuantity());
-                        productDao.save(newProduct);
-                    } else {
-                        response.setMetadata("Respuesta NOK", "-2", "Stock insuficiente para la actualización");
-                        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
-                    }
-                }
-
-                // 💡 Recalcular campos
-                double subtotal = saleDetail.getPrice() * saleDetail.getQuantity();
-                double totalConGanancia = subtotal + (subtotal * saleDetail.getProfitPercentage());
-
-                saleDetailToUpdate.setSubtotalSinGanancia(subtotal);
-                saleDetailToUpdate.setGanancia(totalConGanancia - subtotal);
-                saleDetailToUpdate.setTotal(totalConGanancia);
-
-                // Guardar
-                SaleDetail updatedSaleDetail = saleDetailDao.save(saleDetailToUpdate);
-                list.add(updatedSaleDetail);
-                response.getSaleDetailResponse().setSaleDetail(list);
-                response.setMetadata("Respuesta OK", "00", "Detalle de venta actualizado");
 
             } else {
-                response.setMetadata("Respuesta NOK", "-1", "Detalle de venta no encontrado");
+                response.setMetadata("Error", "-1", "Detalle no encontrado");
                 return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
             }
+
         } catch (Exception e) {
-            response.setMetadata("Respuesta NOK", "-1", "Error al actualizar el detalle de venta");
+            response.setMetadata("Error", "-1", "Error al actualizar: " + e.getMessage());
             return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
@@ -178,27 +188,27 @@ public class SaleDetailServiceImpl implements ISaleDetailService {
         SaleDetailResponseRest response = new SaleDetailResponseRest();
 
         try {
-            Optional<SaleDetail> saleDetailOptional = saleDetailDao.findById(id);
+            Optional<SaleDetail> existingOpt = saleDetailDao.findById(id);
 
-            if (saleDetailOptional.isPresent()) {
-                SaleDetail saleDetail = saleDetailOptional.get();
+            if (existingOpt.isPresent()) {
+                SaleDetail detail = existingOpt.get();
 
-                // Restaurar el stock del producto antes de eliminar
-                Optional<Product> productOptional = productDao.findById(saleDetail.getProduct().getId());
-                if (productOptional.isPresent()) {
-                    Product product = productOptional.get();
-                    product.setAccount(product.getAccount() + saleDetail.getQuantity()); // Devolver stock
-                    productDao.save(product);
-                }
+                // Devolver stock
+                ProductSize productSize = detail.getProductSize();
+                productSize.setAccount(productSize.getAccount() + detail.getQuantity());
+                productSizeDao.save(productSize);
 
+                // Eliminar
                 saleDetailDao.deleteById(id);
-                response.setMetadata("Respuesta OK", "00", "Detalle de venta eliminado");
+                response.setMetadata("OK", "00", "Detalle eliminado correctamente");
+
             } else {
-                response.setMetadata("Respuesta NOK", "-1", "Detalle de venta no encontrado");
+                response.setMetadata("Error", "-1", "Detalle no encontrado");
                 return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
             }
+
         } catch (Exception e) {
-            response.setMetadata("Respuesta NOK", "-1", "Error al eliminar el detalle de venta");
+            response.setMetadata("Error", "-1", "Error al eliminar: " + e.getMessage());
             return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
 

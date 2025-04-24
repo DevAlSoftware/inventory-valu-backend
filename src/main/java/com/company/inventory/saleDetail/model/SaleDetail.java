@@ -1,6 +1,8 @@
 package com.company.inventory.saleDetail.model;
 
+import com.company.inventory.products.enums.PriceType;
 import com.company.inventory.products.model.Product;
+import com.company.inventory.productsSize.model.ProductSize;
 import com.company.inventory.sale.model.Sale;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
@@ -30,6 +32,10 @@ public class SaleDetail implements Serializable {
     @JoinColumn(name = "product_id", nullable = false)
     private Product product;
 
+    @ManyToOne
+    @JoinColumn(name = "product_size_id", nullable = false)
+    private ProductSize productSize;
+
     private Integer quantity;
     private Double price;
     private Double profitPercentage;
@@ -37,6 +43,9 @@ public class SaleDetail implements Serializable {
 
     private Double subtotalSinGanancia;
     private Double ganancia;
+
+    @Enumerated(EnumType.STRING)
+    private PriceType priceType;
 
     public Long getId() {
         return id;
@@ -108,6 +117,22 @@ public class SaleDetail implements Serializable {
 
     public void setGanancia(Double ganancia) {
         this.ganancia = ganancia;
+    }
+
+    public ProductSize getProductSize() {
+        return productSize;
+    }
+
+    public void setProductSize(ProductSize productSize) {
+        this.productSize = productSize;
+    }
+
+    public PriceType getPriceType() {
+        return priceType;
+    }
+
+    public void setPriceType(PriceType priceType) {
+        this.priceType = priceType;
     }
 }
 

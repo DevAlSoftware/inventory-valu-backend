@@ -9,7 +9,10 @@ import com.company.inventory.categories.model.Category;
 import com.company.inventory.products.dao.IProductDao;
 import com.company.inventory.products.model.Product;
 import com.company.inventory.products.response.ProductResponseRest;
+import com.company.inventory.productsSize.dao.IProductSizeDao;
+import com.company.inventory.productsSize.model.ProductSize;
 import com.company.inventory.util.Util;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -21,10 +24,24 @@ public class ProductServiceImpl implements IProductService{
     private ICategoryDao categoryDao;
     private IProductDao productDao;
 
+    @Autowired
+    private IProductSizeDao productSizeDao;
+
+
     public ProductServiceImpl(ICategoryDao categoryDao, IProductDao productDao) {
         super();
         this.categoryDao = categoryDao;
         this.productDao = productDao;
+    }
+
+    private void actualizarAccountDelProducto(Product producto) {
+        List<ProductSize> tallas = productSizeDao.findByProductId(producto.getId());
+
+        int total = tallas.stream()
+                .mapToInt(ProductSize::getAccount)
+                .sum();
+
+        producto.setAccount(total);
     }
 
     @Override
@@ -49,6 +66,10 @@ public class ProductServiceImpl implements IProductService{
 
             //save the product
             Product productSaved = productDao.save(product);
+            // ejemplo dentro de update() o save() en ProductServiceImpl
+            productDao.save(product);
+            actualizarAccountDelProducto(product);
+            productDao.save(product); // se vuelve a guardar con la cuenta actualizada
 
             if (productSaved != null) {
                 list.add(productSaved);
@@ -246,13 +267,16 @@ public class ProductServiceImpl implements IProductService{
                 productSearch.get().setPicture(product.getPicture());
                 productSearch.get().setPrice(product.getPrice());
                 productSearch.get().setCode(product.getCode());
-                productSearch.get().setSize(product.getSize());
                 productSearch.get().setRetail(product.getRetail());
                 productSearch.get().setWholesaler(product.getWholesaler());
                 productSearch.get().setUbication(product.getUbication());
 
                 //save the product in DB
                 Product productToUpdate = productDao.save(productSearch.get());
+                // ejemplo dentro de update() o save() en ProductServiceImpl
+                productDao.save(product);
+                actualizarAccountDelProducto(product);
+                productDao.save(product); // se vuelve a guardar con la cuenta actualizada
 
                 if (productToUpdate != null) {
                     list.add(productToUpdate);
