@@ -1,8 +1,12 @@
 package com.company.inventory.productsSize.controller;
 
+import com.company.inventory.products.response.ProductResponseRest;
 import com.company.inventory.productsSize.model.ProductSize;
 import com.company.inventory.productsSize.response.ProductSizeResponseRest;
 import com.company.inventory.productsSize.services.IProductSizeService;
+import com.company.inventory.util.ProductExcelExporter;
+import com.company.inventory.util.ProductSizeExcelExporter;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -81,6 +85,30 @@ public class ProductSizeRestController {
     @GetMapping("/product-sizes/product-name/{productName}")
     public ResponseEntity<ProductSizeResponseRest> searchByProductName(@PathVariable String productName) {
         return productSizeService.searchByProductName(productName);
+    }
+
+    /**
+     * export product in excel file
+     * @param response
+     * @throws IOException
+     */
+    @GetMapping("/product-sizes/export/excel")
+    public void exportToExcel(HttpServletResponse response) throws IOException {
+
+        response.setContentType("application/octet-stream");
+
+        String headerKey = "Content-Disposition";
+        String headerValue = "attachment; filename=result_product.xlsx";
+        response.setHeader(headerKey, headerValue);
+
+        ResponseEntity<ProductSizeResponseRest> products = productSizeService.search();
+
+        ProductSizeExcelExporter excelExporter = new ProductSizeExcelExporter(
+                products.getBody().getProductSizes().getProductSizes());
+
+        excelExporter.export(response);
+
+
     }
 
 }

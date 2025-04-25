@@ -39,12 +39,12 @@ public class SaleExcelExporter {
         createCell(row, 0, "Venta ID", style);
         createCell(row, 1, "Cliente", style);
         createCell(row, 2, "Fecha", style);
-        createCell(row, 3, "Subtotal", style);
-        createCell(row, 4, "Ganancia", style);
-        createCell(row, 5, "Producto", style);
-        createCell(row, 6, "Cantidad", style);
-        createCell(row, 7, "Precio", style);
-        createCell(row, 8, "% Ganancia", style);
+        createCell(row, 3, "Producto", style);
+        createCell(row, 4, "Talla", style);
+        createCell(row, 5, "Cantidad", style);
+        createCell(row, 6, "Tipo Precio", style);
+        createCell(row, 7, "Precio Venta", style);
+        createCell(row, 8, "Subtotal", style);
     }
 
     private void createCell(Row row, int columnCount, Object value, CellStyle style) {
@@ -91,13 +91,12 @@ public class SaleExcelExporter {
                 createCell(row, columnCount++, sale.getId(), style);
                 createCell(row, columnCount++, sale.getCustomer().getFullName(), style);
                 createCell(row, columnCount++, sale.getSaleDate().toString(), style);
-                createCell(row, columnCount++, subtotal, style);
-                createCell(row, columnCount++, total - subtotal, style); // ganancia
-
                 createCell(row, columnCount++, detail.getProduct().getName(), style);
+                createCell(row, columnCount++, detail.getProductSize().getSize(), style);
                 createCell(row, columnCount++, cantidad, style);
+                createCell(row, columnCount++, detail.getPriceType(), style);
                 createCell(row, columnCount++, precio, style);
-                createCell(row, columnCount++, porcentaje, style);
+                createCell(row, columnCount++, subtotal, style);
             }
         }
     }
