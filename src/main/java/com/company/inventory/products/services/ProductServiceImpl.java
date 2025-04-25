@@ -186,20 +186,30 @@ public class ProductServiceImpl implements IProductService{
         ProductResponseRest response = new ProductResponseRest();
 
         try {
+            Optional<Product> productOpt = productDao.findById(id);
 
-            //delete producto by id
-            productDao.deleteById(id);
-            response.setMetadata("Respuesta ok", "00", "Producto eliminado");
+            if (productOpt.isPresent()) {
+                Product product = productOpt.get();
 
+                if (!product.getSizes().isEmpty()) {
+                    response.setMetadata("respuesta nok", "-1", "No se puede eliminar el producto porque tiene tallas asociadas");
+                    return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+                }
+
+                productDao.deleteById(id);
+                response.setMetadata("respuesta ok", "00", "Producto eliminado con éxito");
+            } else {
+                response.setMetadata("respuesta nok", "-1", "Producto no encontrado");
+                return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+            }
 
         } catch (Exception e) {
-            e.getStackTrace();
+            e.printStackTrace();
             response.setMetadata("respuesta nok", "-1", "Error al eliminar producto");
-            return new ResponseEntity<ProductResponseRest>(response, HttpStatus.INTERNAL_SERVER_ERROR);
-
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
-        return new ResponseEntity<ProductResponseRest>(response, HttpStatus.OK);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @Override

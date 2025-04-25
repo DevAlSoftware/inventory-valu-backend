@@ -1,10 +1,14 @@
 package com.company.inventory.categories.model;
 
+import com.company.inventory.products.model.Product;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "categories")
@@ -25,6 +29,10 @@ public class Category implements Serializable {
     private String code;
     private String name;
     private String description;
+
+    @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonIgnoreProperties("category")
+    private List<Product> products = new ArrayList<>();
 
     public Long getId() {
         return id;
@@ -56,5 +64,13 @@ public class Category implements Serializable {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public List<Product> getProducts() {
+        return products;
+    }
+
+    public void setProducts(List<Product> products) {
+        this.products = products;
     }
 }

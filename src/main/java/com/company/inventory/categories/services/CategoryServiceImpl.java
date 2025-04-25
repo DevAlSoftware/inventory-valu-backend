@@ -166,17 +166,32 @@ public class CategoryServiceImpl implements ICategoryService {
     @Override
     @Transactional
     public ResponseEntity<CategoryResponseRest> deleteById(Long id) {
-
         CategoryResponseRest response = new CategoryResponseRest();
 
         try {
-            categoryDao.deleteById(id);
-            response.setMetadata("respuesta ok", "00", "Registro eliminado");
+            Optional<Category> categoryOpt = categoryDao.findById(id);
+
+            if (categoryOpt.isPresent()) {
+                Category category = categoryOpt.get();
+
+                if (!category.getProducts().isEmpty()) {
+                    response.setMetadata("respuesta nok", "-1", "No se puede eliminar la categoría porque tiene productos asociados");
+                    return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+                }
+
+                categoryDao.deleteById(id);
+                response.setMetadata("respuesta ok", "00", "Categoría eliminada con éxito");
+            } else {
+                response.setMetadata("respuesta nok", "-1", "Categoría no encontrada");
+                return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+            }
+
         } catch (Exception e) {
-            response.setMetadata("Respuesta nok", "-1", "Error al eliminar");
-            e.getStackTrace();
-            return new ResponseEntity<CategoryResponseRest>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+            e.printStackTrace();
+            response.setMetadata("respuesta nok", "-1", "Error al eliminar categoría");
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return new ResponseEntity<CategoryResponseRest>(response, HttpStatus.OK);
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 }
