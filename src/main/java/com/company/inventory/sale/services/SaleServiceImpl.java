@@ -109,6 +109,7 @@ public class SaleServiceImpl implements ISaleService {
 
         try {
             double totalVenta = 0;
+            double subtotalSinGanancia = 0;
 
             if (sale.getSaleDetails() != null) {
                 for (SaleDetail detail : sale.getSaleDetails()) {
@@ -138,6 +139,7 @@ public class SaleServiceImpl implements ISaleService {
                     detail.setGanancia(ganancia);
                     detail.setTotal(total);
 
+                    subtotalSinGanancia += subtotal;
                     totalVenta += total;
 
                     // Descontar del stock de esa talla
@@ -151,7 +153,10 @@ public class SaleServiceImpl implements ISaleService {
                 }
             }
 
+            // Registrar total y ganancia en la venta
+            double gananciaTotal = totalVenta - subtotalSinGanancia;
             sale.setTotal(totalVenta);
+            sale.setGanancia(gananciaTotal); // 👈 AQUÍ SE SETEA LA GANANCIA TOTAL
 
             Sale saleSaved = saleDao.save(sale);
             Customer customerFull = customerDao.findById(saleSaved.getCustomer().getId()).orElse(null);
@@ -169,7 +174,6 @@ public class SaleServiceImpl implements ISaleService {
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
-
 
 
     @Override

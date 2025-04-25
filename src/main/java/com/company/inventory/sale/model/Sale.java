@@ -29,6 +29,9 @@ public class Sale implements Serializable {
 
     private LocalDateTime saleDate;
 
+    @Column(name = "ganancia")
+    private Double ganancia;
+
     @OneToMany(mappedBy = "sale", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     private List<SaleDetail> saleDetails;
@@ -57,6 +60,14 @@ public class Sale implements Serializable {
 
     public void setSaleDate(LocalDateTime saleDate) {
         this.saleDate = saleDate;
+    }
+
+    public Double getGanancia() {
+        return ganancia;
+    }
+
+    public void setGanancia(Double ganancia) {
+        this.ganancia = ganancia;
     }
 
     public List<SaleDetail> getSaleDetails() {

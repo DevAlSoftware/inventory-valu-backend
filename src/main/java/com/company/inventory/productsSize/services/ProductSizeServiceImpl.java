@@ -205,4 +205,28 @@ public class ProductSizeServiceImpl implements IProductSizeService {
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public ResponseEntity<ProductSizeResponseRest> searchByProductName(String productName) {
+        ProductSizeResponseRest response = new ProductSizeResponseRest();
+        List<ProductSize> list = new ArrayList<>();
+
+        try {
+            list = productSizeDao.findByProductNameContainingIgnoreCase(productName);
+            if (!list.isEmpty()) {
+                response.getProductSizes().setProductSizes(list);
+                response.setMetadata("respuesta ok", "00", "Tallas encontradas para el producto");
+            } else {
+                response.setMetadata("respuesta nok", "-1", "No hay tallas para este producto");
+                return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            response.setMetadata("respuesta nok", "-1", "Error al buscar tallas del producto");
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
 }

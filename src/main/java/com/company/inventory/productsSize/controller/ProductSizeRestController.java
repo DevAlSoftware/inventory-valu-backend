@@ -78,4 +78,9 @@ public class ProductSizeRestController {
         return productSizeService.searchByProductId(productId);
     }
 
+    @GetMapping("/product-sizes/product-name/{productName}")
+    public ResponseEntity<ProductSizeResponseRest> searchByProductName(@PathVariable String productName) {
+        return productSizeService.searchByProductName(productName);
+    }
+
 }

@@ -13,5 +13,5 @@ public interface IProductSizeService {
     public ResponseEntity<ProductSizeResponseRest> search();
     public ResponseEntity<ProductSizeResponseRest> update(ProductSize productSize, Long productId, Long id);
     public ResponseEntity<ProductSizeResponseRest> searchByProductId(Long productId);
-
+    public ResponseEntity<ProductSizeResponseRest> searchByProductName(String productName);
 }
