@@ -32,6 +32,9 @@ public class Sale implements Serializable {
     @Column(name = "ganancia")
     private Double ganancia;
 
+    @Column(name = "manual_discount")
+    private Double manualDiscount;
+
     @OneToMany(mappedBy = "sale", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     private List<SaleDetail> saleDetails;
@@ -76,6 +79,14 @@ public class Sale implements Serializable {
 
     public void setSaleDetails(List<SaleDetail> saleDetails) {
         this.saleDetails = saleDetails;
+    }
+
+    public Double getManualDiscount() {
+        return manualDiscount;
+    }
+
+    public void setManualDiscount(Double manualDiscount) {
+        this.manualDiscount = manualDiscount;
     }
 
     public Double getTotal() {

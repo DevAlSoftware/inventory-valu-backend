@@ -156,7 +156,8 @@ public class SaleServiceImpl implements ISaleService {
             // Registrar total y ganancia en la venta
             double gananciaTotal = totalVenta - subtotalSinGanancia;
             sale.setTotal(totalVenta);
-            sale.setGanancia(gananciaTotal); // 👈 AQUÍ SE SETEA LA GANANCIA TOTAL
+            sale.setGanancia(gananciaTotal);
+            sale.setManualDiscount(sale.getManualDiscount());
 
             Sale saleSaved = saleDao.save(sale);
             Customer customerFull = customerDao.findById(saleSaved.getCustomer().getId()).orElse(null);
