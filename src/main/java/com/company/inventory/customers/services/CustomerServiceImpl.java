@@ -1,7 +1,5 @@
 package com.company.inventory.customers.services;
 
-import com.company.inventory.categories.model.Category;
-import com.company.inventory.categories.response.CategoryResponseRest;
 import com.company.inventory.customers.dao.ICustomerDao;
 import com.company.inventory.customers.model.Customer;
 import com.company.inventory.customers.response.CustomerResponseRest;

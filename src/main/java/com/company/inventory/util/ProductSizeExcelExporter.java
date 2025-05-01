@@ -1,6 +1,5 @@
 package com.company.inventory.util;
 
-import com.company.inventory.products.model.Product;
 import com.company.inventory.productsSize.model.ProductSize;
 import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.http.HttpServletResponse;

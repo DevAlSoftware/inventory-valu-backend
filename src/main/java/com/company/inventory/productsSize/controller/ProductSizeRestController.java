@@ -1,10 +1,8 @@
 package com.company.inventory.productsSize.controller;
 
-import com.company.inventory.products.response.ProductResponseRest;
 import com.company.inventory.productsSize.model.ProductSize;
 import com.company.inventory.productsSize.response.ProductSizeResponseRest;
 import com.company.inventory.productsSize.services.IProductSizeService;
-import com.company.inventory.util.ProductExcelExporter;
 import com.company.inventory.util.ProductSizeExcelExporter;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.ResponseEntity;
@@ -12,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 
-@CrossOrigin(origins = {"http://localhost:4200"})
+@CrossOrigin(origins = {"http://localhost:4200", "http://69.62.67.49:4200"})
 @RestController
 @RequestMapping("/api/v1")
 public class ProductSizeRestController {

@@ -1,6 +1,5 @@
 package com.company.inventory.productsSize.model;
 
-import com.company.inventory.categories.model.Category;
 import com.company.inventory.products.model.Product;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;

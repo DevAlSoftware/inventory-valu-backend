@@ -1,10 +1,8 @@
 package com.company.inventory.sale.controller;
 
-import com.company.inventory.categories.response.CategoryResponseRest;
 import com.company.inventory.sale.model.Sale;
 import com.company.inventory.sale.response.SaleResponseRest;
 import com.company.inventory.sale.services.ISaleService;
-import com.company.inventory.util.CategoryExcelExporter;
 import com.company.inventory.util.SaleExcelExporter;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +14,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1")
-@CrossOrigin(origins = {"http://localhost:4200"})
+@CrossOrigin(origins = {"http://localhost:4200", "http://69.62.67.49:4200"})
 public class SaleRestController {
 
     @Autowired

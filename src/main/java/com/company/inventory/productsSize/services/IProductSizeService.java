@@ -1,6 +1,5 @@
 package com.company.inventory.productsSize.services;
 
-import com.company.inventory.products.response.ProductResponseRest;
 import com.company.inventory.productsSize.model.ProductSize;
 import com.company.inventory.productsSize.response.ProductSizeResponseRest;
 import org.springframework.http.ResponseEntity;

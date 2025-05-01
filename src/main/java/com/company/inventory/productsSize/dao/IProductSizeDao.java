@@ -1,8 +1,6 @@
 package com.company.inventory.productsSize.dao;
 
-import com.company.inventory.products.model.Product;
 import com.company.inventory.productsSize.model.ProductSize;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 
 import java.util.List;

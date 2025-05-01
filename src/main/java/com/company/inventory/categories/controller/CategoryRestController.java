@@ -3,7 +3,6 @@ package com.company.inventory.categories.controller;
 import com.company.inventory.categories.model.Category;
 import com.company.inventory.categories.response.CategoryResponseRest;
 import com.company.inventory.categories.services.ICategoryService;
-import com.company.inventory.products.response.ProductResponseRest;
 import com.company.inventory.util.CategoryExcelExporter;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 
-@CrossOrigin(origins = {"http://localhost:4200"})
+@CrossOrigin(origins = {"http://localhost:4200", "http://69.62.67.49:4200"})
 @RestController
 @RequestMapping("/api/v1")
 public class CategoryRestController {

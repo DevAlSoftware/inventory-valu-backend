@@ -1,6 +1,5 @@
 package com.company.inventory.customers.controller;
 
-import com.company.inventory.categories.response.CategoryResponseRest;
 import com.company.inventory.customers.model.Customer;
 import com.company.inventory.customers.response.CustomerResponseRest;
 import com.company.inventory.customers.services.ICustomerService;
@@ -8,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-@CrossOrigin(origins = {"http://localhost:4200"})
+@CrossOrigin(origins = {"http://localhost:4200", "http://69.62.67.49:4200"})
 @RestController
 @RequestMapping("api/v1")
 public class CustomerController {

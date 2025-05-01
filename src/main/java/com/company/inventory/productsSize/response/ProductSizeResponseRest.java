@@ -1,7 +1,6 @@
 package com.company.inventory.productsSize.response;
 
 import com.company.inventory.ResponseRest;
-import com.company.inventory.products.response.ProductResponse;
 import lombok.Getter;
 import lombok.Setter;
 
